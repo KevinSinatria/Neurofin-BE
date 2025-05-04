@@ -1,0 +1,35 @@
+{
+  "name": "neurofin-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "rayan",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@hapi/cookie": "^12.0.1",
+    "@hapi/hapi": "^21.4.0",
+    "@hapi/joi": "^17.1.1",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
+    "nodemailer": "^6.10.0",
+    "pg": "^8.14.1",
+    "pg-hstore": "^2.3.4",
+    "pino": "^9.6.0",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

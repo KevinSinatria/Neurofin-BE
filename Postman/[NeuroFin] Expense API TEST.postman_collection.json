@@ -1,0 +1,700 @@
+{
+	"info": {
+		"_postman_id": "188cc397-e9a3-41fe-b71d-a9b23c2c43cf",
+		"name": "[NeuroFin] API TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[NeuroFin]Register User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status code harus 201 atau 400\", function () {",
+							"    pm.expect([201, 400]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test('response harus berupa JSON', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"",
+							"pm.test(\"response memiliki status dan message\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"userthree\",\n  \"email\": \"userthree@gmail.com\",\n  \"password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Verify Email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.message).to.eql(\"Email berhasil diverifikasi\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"user1@example.com\",\n  \"code\": \"79044562-a62f-47a3-a1b6-c1d9849ae73e\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/verify-email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"verify-email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Login User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.message).to.eql(\"Login berhasil\");",
+							"    pm.expect(jsonData.data).to.have.property(\"token\");",
+							"});",
+							"",
+							"pm.environment.set(\"authToken\", pm.response.json().data.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Create Expense",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.message).to.eql(\"Expense berhasil ditambahkan\");",
+							"    pm.expect(jsonData.data).to.have.property(\"expenseid\");",
+							"});",
+							"",
+							"pm.test('response body data should contain expenseid', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const { data } = responseJson;",
+							"    pm.expect(data).to.haveOwnProperty('expenseid');",
+							"    pm.expect(data.expenseid).to.not.equals('');",
+							"    pm.environment.set('expenseid', data.expenseid);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"category\": \"Food\",\n  \"uangMasuk\": 0,\n  \"uangKeluar\": 50000,\n  \"uangAkhir\": 950000,\n  \"description\": \"Lunch with friends\",\n  \"transaction_date\": \"2025-03-28\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/expenses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Create Expense Without Catagory",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response contains error details\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.statusCode).to.eql(400);",
+							"    pm.expect(jsonData.error).to.eql(\"Bad Request\");",
+							"    pm.expect(jsonData.message).to.include(\"category\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"uangMasuk\": 0,\n  \"uangKeluar\": 50000,\n  \"uangAkhir\": 950000,\n  \"description\": \"Lunch with friends\",\n  \"transaction_date\": \"2025-03-28\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/expenses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Get All Expenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.data).to.have.property(\"expenses\");",
+							"    pm.expect(jsonData.data.expenses).to.be.an(\"array\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/expenses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Get Expense Correct ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.data).to.have.property(\"expense\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/expenses/{{expenseid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"{{expenseid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Get Expense Invalid ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains fail status\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.status).to.eql(\"fail\");\r",
+							"    pm.expect(jsonData.message).to.eql(\"Expense tidak ditemukan\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/expenses/xxxxx",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"xxxxx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Update Expense",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.message).to.eql(\"Expense berhasil diperbarui\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"category\": \"Transport\",\n  \"uangMasuk\": 0,\n  \"uangKeluar\": 20000,\n  \"uangAkhir\": 930000,\n  \"description\": \"Taxi fare\",\n  \"transaction_date\": \"2025-03-28\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/expenses/{{expenseid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"{{expenseid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Update Expense Without Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Response contains error details\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.statusCode).to.eql(400);",
+							"    pm.expect(jsonData.error).to.eql(\"Bad Request\");",
+							"    pm.expect(jsonData.message).to.include(\"category\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"uangMasuk\": 0,\n  \"uangKeluar\": 20000,\n  \"uangAkhir\": 930000,\n  \"description\": \"Taxi fare\",\n  \"transaction_date\": \"2025-03-28\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/expenses/{{expenseid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"{{expenseid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Update Expense Invalid Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Response contains error details\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.statusCode).to.eql(404);",
+							"    pm.expect(jsonData.error).to.eql(\"Not Found\");",
+							"    pm.expect(jsonData.message).to.eql(\"Expense gagal diperbarui. Id tidak ditemukan\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"category\": \"Transport\",\n  \"uangMasuk\": 0,\n  \"uangKeluar\": 20000,\n  \"uangAkhir\": 930000,\n  \"description\": \"Taxi fare\",\n  \"transaction_date\": \"2025-03-28\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/expenses/xxxxxx",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"xxxxxx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Delete Expense correct id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains success status\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"success\");",
+							"    pm.expect(jsonData.message).to.eql(\"Expense berhasil dihapus\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/expenses/{{expenseid}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"{{expenseid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[NeuroFin] Delete Expense Invalid id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Response contains error details\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.statusCode).to.eql(404); ",
+							"    pm.expect(jsonData.error).to.eql(\"Not Found\");",
+							"    pm.expect(jsonData.message).to.eql(\"Expense gagal dihapus. Id tidak ditemukan\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/expenses/xxxxx",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"expenses",
+						"xxxxx"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://fqmvtbzmnphxjwbrqqwq.supabase.co",
+			"type": "string"
+		},
+		{
+			"key": "anonKey",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxbXZ0YnptbnBoeGp3YnJxcXdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5OTEzMTMsImV4cCI6MjA1ODU2NzMxM30.sczCm0eJg0X-iIx64bdPXDfEP2veEE5_EToR-C-Rglw",
+			"type": "string"
+		},
+		{
+			"key": "expenseId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
