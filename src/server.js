@@ -9,7 +9,7 @@ const config = require('../config/config');
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 9000,
-    host: 'localhost',
+    host: '0.0.0.0',
     routes: {
       cors: {
         origin: ['http://localhost:5173'],
