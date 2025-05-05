@@ -115,37 +115,55 @@ const verifyEmailHandler = async (request, h) => {
 };
 
 const loginHandler = async (request, h) => {
-  const { email, password } = request.payload;
+  try {
+    console.log('Incoming payload:', request.payload); // Debug 1
+    
+    if (!request.payload.email || !request.payload.password) {
+      throw Boom.badRequest('Email dan password diperlukan');
+    }
 
-  const user = await User.findOne({ where: { email } });
-  if (!user || !(await Bcrypt.compare(password, user.password))) {
-    throw Boom.unauthorized("Email atau kata sandi tidak valid");
-  }
-
-  if (!user.verified) {
-    throw Boom.forbidden("Harap verifikasi email Anda terlebih dahulu");
-  }
-
-  const token = Jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { algorithm: "HS256", expiresIn: "4h" }
-  );
-
-  return h
-    .response({
-      status: "success",
-      message: "Login berhasil",
-    })
-    .code(200)
-    .state("token", token, {
-      isHttpOnly: true,
-      isSecure: process.env.NODE_ENV === "production",
-      sameSite: "None",
-      path: "/",
-      ttl: 1000 * 60 * 60 * 4,
-      domain: 'https://neurofin-be.vercel.app'
+    const user = await User.findOne({ 
+      where: { email: request.payload.email },
+      attributes: ['id', 'email', 'password', 'verified'] // Explicit select
     });
+    
+    if (!user) {
+      console.log('User not found for email:', request.payload.email);
+      throw Boom.unauthorized('Email tidak terdaftar');
+    }
+
+    const valid = await Bcrypt.compare(request.payload.password, user.password);
+    if (!valid) {
+      throw Boom.unauthorized('Password salah');
+    }
+
+    if (!user.verified) {
+      throw Boom.forbidden('Email belum diverifikasi');
+    }
+
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET not defined!');
+      throw Boom.internal('Server misconfiguration');
+    }
+
+    const token = Jwt.sign(
+      { id: user.id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '4h' }
+    );
+
+    return h.response({ 
+      status: 'success',
+      data: { token } 
+    }).code(200);
+
+  } catch (error) {
+    console.error('Login error:', error);
+    return h.response({
+      status: 'error',
+      message: error.message || 'Internal server error'
+    }).code(error.output?.statusCode || 500);
+  }
 };
 
 const meHandler = async (request, h) => {
