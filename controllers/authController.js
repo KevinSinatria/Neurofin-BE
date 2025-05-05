@@ -152,11 +152,19 @@ const loginHandler = async (request, h) => {
       { expiresIn: '4h' }
     );
 
-    return h.response({ 
+    return h.response({
       status: 'success',
-      message: 'Login berhasil',
-      data: { token } 
-    }).code(200);
+      message: 'Login berhasil'
+    })
+    .code(200)
+    .state('token', token, {
+      ttl: 1000 * 60 * 60 * 4, // 4 jam
+      path: '/',
+      isSecure: true, // Wajib true di production
+      isHttpOnly: true,
+      sameSite: 'None', // Untuk cross-site
+      domain: '.neurofin-be.vercel.app' // Sesuaikan
+    });
 
   } catch (error) {
     console.error('Login error:', error);
