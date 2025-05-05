@@ -153,6 +153,7 @@ const loginHandler = async (request, h) => {
     return h
       .response({
         status: "success",
+        token: token,
         message: "Login berhasil",
       })
       .code(200)
