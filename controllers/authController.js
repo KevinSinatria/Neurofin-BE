@@ -158,13 +158,13 @@ const loginHandler = async (request, h) => {
       })
       .code(200)
       .state("token", token, {
-        ttl: 1000 * 60 * 60 * 4,
+        ttl: 1000 * 60 * 60 * 4, 
         path: "/",
         isSecure: true,
         isHttpOnly: true,
         sameSite: "None",
-        domain: "neurofin-be.vercel.app",
-      });
+        domain: ".vercel.app"
+      })
   } catch (error) {
     console.error("Login error:", error);
     return h
