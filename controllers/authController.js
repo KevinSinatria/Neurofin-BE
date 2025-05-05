@@ -141,9 +141,10 @@ const loginHandler = async (request, h) => {
     .state("token", token, {
       isHttpOnly: true,
       isSecure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "None",
       path: "/",
       ttl: 1000 * 60 * 60 * 4,
+      domain: 'https://neurofin-be.vercel.app'
     });
 };
 
