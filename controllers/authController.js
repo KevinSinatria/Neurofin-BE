@@ -116,62 +116,62 @@ const verifyEmailHandler = async (request, h) => {
 
 const loginHandler = async (request, h) => {
   try {
-    console.log('Incoming payload:', request.payload); // Debug 1
-    
+    console.log("Incoming payload:", request.payload); // Debug 1
+
     if (!request.payload.email || !request.payload.password) {
-      throw Boom.badRequest('Email dan password diperlukan');
+      throw Boom.badRequest("Email dan password diperlukan");
     }
 
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email: request.payload.email },
-      attributes: ['id', 'email', 'password', 'verified'] // Explicit select
+      attributes: ["id", "email", "password", "verified"], // Explicit select
     });
-    
+
     if (!user) {
-      console.log('User not found for email:', request.payload.email);
-      throw Boom.unauthorized('Email tidak terdaftar');
+      console.log("User not found for email:", request.payload.email);
+      throw Boom.unauthorized("Email tidak terdaftar");
     }
 
     const valid = await Bcrypt.compare(request.payload.password, user.password);
     if (!valid) {
-      throw Boom.unauthorized('Password salah');
+      throw Boom.unauthorized("Password salah");
     }
 
     if (!user.verified) {
-      throw Boom.forbidden('Email belum diverifikasi');
+      throw Boom.forbidden("Email belum diverifikasi");
     }
 
     if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET not defined!');
-      throw Boom.internal('Server misconfiguration');
+      console.error("JWT_SECRET not defined!");
+      throw Boom.internal("Server misconfiguration");
     }
 
-    const token = Jwt.sign(
-      { id: user.id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '4h' }
-    );
-
-    return h.response({
-      status: 'success',
-      message: 'Login berhasil'
-    })
-    .code(200)
-    .state('token', token, {
-      ttl: 1000 * 60 * 60 * 4, // 4 jam
-      path: '/',
-      isSecure: true, // Wajib true di production
-      isHttpOnly: true,
-      sameSite: 'None', // Untuk cross-site
-      domain: '.neurofin-be.vercel.app' // Sesuaikan
+    const token = Jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "4h",
     });
 
+    return h
+      .response({
+        status: "success",
+        message: "Login berhasil",
+      })
+      .code(200)
+      .state("token", token, {
+        ttl: 1000 * 60 * 60 * 4,
+        path: "/",
+        isSecure: true,
+        isHttpOnly: true,
+        sameSite: "None",
+        domain: "neurofin-be.vercel.app",
+      });
   } catch (error) {
-    console.error('Login error:', error);
-    return h.response({
-      status: 'error',
-      message: error.message || 'Internal server error'
-    }).code(error.output?.statusCode || 500);
+    console.error("Login error:", error);
+    return h
+      .response({
+        status: "error",
+        message: error.message || "Internal server error",
+      })
+      .code(error.output?.statusCode || 500);
   }
 };
 
