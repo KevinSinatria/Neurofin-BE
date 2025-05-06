@@ -173,7 +173,7 @@ const loginHandler = async (request, h) => {
         path: "/",
         isSecure: process.env.NODE_ENV === "production",
         isHttpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        sameSite: "None",
       });
   } catch (error) {
     console.error("Login error:", error.message);
