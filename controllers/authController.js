@@ -174,8 +174,6 @@ const loginHandler = async (request, h) => {
         isSecure: process.env.NODE_ENV === "production",
         isHttpOnly: true,
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        domain:
-          process.env.NODE_ENV === "production" ? "neurofin-be.vercel.app" : "localhost",
       });
   } catch (error) {
     console.error("Login error:", error.message);
