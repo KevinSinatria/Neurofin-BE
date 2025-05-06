@@ -116,15 +116,18 @@ const verifyEmailHandler = async (request, h) => {
 
 const loginHandler = async (request, h) => {
   try {
-    console.log("Incoming payload:", request.payload); // Debug 1
-
     if (!request.payload.email || !request.payload.password) {
       throw Boom.badRequest("Email dan password diperlukan");
     }
 
+    const { email, password } = request.payload;
+
+    // Debugging payload
+    console.log("Login attempt for:", email);
+
     const user = await User.findOne({
-      where: { email: request.payload.email },
-      attributes: ["id", "email", "password", "verified"], // Explicit select
+      where: { email },
+      attributes: ["id", "email", "password", "verified"],
     });
 
     if (!user) {
@@ -132,7 +135,7 @@ const loginHandler = async (request, h) => {
       throw Boom.unauthorized("Email tidak terdaftar");
     }
 
-    const valid = await Bcrypt.compare(request.payload.password, user.password);
+    const valid = await Bcrypt.compare(password, user.password);
     if (!valid) {
       throw Boom.unauthorized("Password salah");
     }
@@ -146,31 +149,42 @@ const loginHandler = async (request, h) => {
       throw Boom.internal("Server misconfiguration");
     }
 
-    const token = Jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "4h",
-    });
+    const token = Jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        iss: "neurofin-be",
+        aud: "neurofin-fe",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "12h" }
+    );
 
     return h
       .response({
         status: "success",
-        token: token,
         message: "Login berhasil",
+        user: { id: user.id, email: user.email },
+        token: token,
       })
       .code(200)
       .state("token", token, {
-        ttl: 1000 * 60 * 60 * 4, 
+        ttl: 1000 * 60 * 60 * 12,
         path: "/",
-        isSecure: true,
+        isSecure: process.env.NODE_ENV === "production",
         isHttpOnly: true,
-        sameSite: "None",
-        domain: ".vercel.app"
-      })
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        domain:
+          process.env.NODE_ENV === "production" ? "neurofin-be.vercel.app" : "localhost",
+      });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error:", error.message);
     return h
       .response({
         status: "error",
-        message: error.message || "Internal server error",
+        message: error.message,
+        details:
+          process.env.NODE_ENV === "development" ? error.stack : undefined,
       })
       .code(error.output?.statusCode || 500);
   }
