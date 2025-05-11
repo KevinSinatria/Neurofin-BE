@@ -1,26 +1,32 @@
-require('dotenv').config();
-const Hapi = require('@hapi/hapi');
-const routes = require('../routes/expenseRoutes');
-const authRoutes = require('../routes/authRoutes');
-const { sequelize } = require('../models');
-const errorHandler = require('../middlewares/errorHandler');
-const config = require('../config/config');
+require("dotenv").config();
+const Hapi = require("@hapi/hapi");
+const routes = require("../routes/expenseRoutes");
+const authRoutes = require("../routes/authRoutes");
+const { sequelize } = require("../models");
+const errorHandler = require("../middlewares/errorHandler");
+const config = require("../config/config");
 
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 9000,
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     routes: {
       cors: {
-        origin: ['https://neurofin-beta.vercel.app'],
+        origin: ["https://neurofin-beta.vercel.app"],
         credentials: true,
+        additionalHeaders: [
+          "Accept",
+          "Authorization",
+          "Content-Type",
+          "X-Requested-With",
+        ],
       },
     },
   });
 
   server.route([...authRoutes, ...routes]);
-  
-  server.ext('onPreResponse', (request, h) => {
+
+  server.ext("onPreResponse", (request, h) => {
     const response = request.response;
     if (response.isBoom) {
       return errorHandler(response, h);
@@ -30,11 +36,11 @@ const init = async () => {
 
   try {
     await sequelize.authenticate();
-    console.log('Database connected successfully.');
+    console.log("Database connected successfully.");
     await server.start();
     console.log(`Server running on ${server.info.uri}`);
   } catch (error) {
-    console.error('Unable to start server:', error);
+    console.error("Unable to start server:", error);
     process.exit(1);
   }
 };
