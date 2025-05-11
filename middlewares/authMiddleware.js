@@ -14,7 +14,7 @@ const authMiddleware = async (request, h) => {
 
     return h.continue;
   } catch (err) {
-    throw Boom.unauthorized("Token tidak valid atau kadaluarsa");
+    throw Boom.unauthorized("Token tidak valid atau kadaluarsa", err);
   }
 };
 
