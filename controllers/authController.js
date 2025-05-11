@@ -152,9 +152,7 @@ const loginHandler = async (request, h) => {
     const token = Jwt.sign(
       {
         id: user.id,
-        email: user.email,
-        iss: "neurofin-be",
-        aud: "neurofin-beta",
+        email: user.email
       },
       process.env.JWT_SECRET,
       { expiresIn: "72h" }

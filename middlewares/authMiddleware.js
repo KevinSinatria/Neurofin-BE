@@ -6,15 +6,12 @@ const authMiddleware = async (request, h) => {
     const token = request.state.token || request.headers.authorization;
     if (!token) throw Boom.unauthorized("Token tidak ditemukan");
 
-    const decoded = Jwt.verify(token, process.env.JWT_SECRET, {
-      issuer: "neurofin-be",
-      audience: "neurofin-beta",
-    });
+    const decoded = Jwt.verify(token, process.env.JWT_SECRET);
     request.auth = decoded;
 
     return h.continue;
   } catch (err) {
-    throw Boom.unauthorized("Token tidak valid atau kadaluarsa");
+    throw Boom.unauthorized("Token tidak valid atau kadaluarsa", err);
   }
 };
 
