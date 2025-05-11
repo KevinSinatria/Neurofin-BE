@@ -3,7 +3,7 @@ const Boom = require("@hapi/boom");
 
 const authMiddleware = async (request, h) => {
   try {
-    const token = request.state.token || request.headers.authorization;
+    const token = request.headers.authorization;
     if (!token) throw Boom.unauthorized("Token tidak ditemukan");
 
     const decoded = Jwt.verify(token, process.env.JWT_SECRET);
@@ -11,7 +11,7 @@ const authMiddleware = async (request, h) => {
 
     return h.continue;
   } catch (err) {
-    throw Boom.unauthorized("Token tidak valid atau kadaluarsa", err);
+    throw Boom.unauthorized("Token tidak valid atau kadaluarsa");
   }
 };
 
