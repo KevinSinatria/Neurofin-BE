@@ -171,10 +171,9 @@ const loginHandler = async (request, h) => {
       .state("token", token, {
         ttl: 1000 * 60 * 60 * 12,
         path: "/",
-        isSecure: false,
-        // isSecure: process.env.NODE_ENV === "production",
+        isSecure: process.env.NODE_ENV === "production",
         isHttpOnly: true,
-        sameSite: "None",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       });
   } catch (error) {
     console.error("Login error:", error.message);
