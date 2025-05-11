@@ -171,13 +171,9 @@ const loginHandler = async (request, h) => {
       .state("token", token, {
         ttl: 1000 * 60 * 60 * 12,
         path: "/",
-        isSecure: process.env.NODE_ENV === "production",
+        isSecure: true,
         isHttpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        domain:
-          process.env.NODE_ENV === "production"
-            ? ".vercel.app" // Notice the leading dot for subdomains
-            : "localhost",
+        sameSite: "None",
       });
   } catch (error) {
     console.error("Login error:", error.message);
