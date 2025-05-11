@@ -154,10 +154,10 @@ const loginHandler = async (request, h) => {
         id: user.id,
         email: user.email,
         iss: "neurofin-be",
-        aud: "neurofin-fe",
+        aud: "neurofin-beta",
       },
       process.env.JWT_SECRET,
-      { expiresIn: "12h" }
+      { expiresIn: "72h" }
     );
 
     return h
