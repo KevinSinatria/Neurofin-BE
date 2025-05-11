@@ -13,7 +13,6 @@ const init = async () => {
     routes: {
       cors: {
         origin: ["https://neurofin-beta.vercel.app"],
-        credentials: true,
         additionalHeaders: [
           "Accept",
           "Authorization",
