@@ -167,14 +167,7 @@ const loginHandler = async (request, h) => {
         user: { id: user.id, email: user.email },
         token: token,
       })
-      .code(200)
-      .state("token", token, {
-        ttl: 1000 * 60 * 60 * 12,
-        path: "/",
-        isSecure: true,
-        isHttpOnly: true,
-        sameSite: "None",
-      });
+      .code(200);
   } catch (error) {
     console.error("Login error:", error.message);
     return h
